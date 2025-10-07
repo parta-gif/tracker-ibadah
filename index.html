@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker Ibadah Harian</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .date-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .date-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .date-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .date-display {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-top: 5px;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .today-indicator {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .checklist-section {
+            margin-bottom: 20px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .checklist-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .checklist-item.checked {
+            background: #d4edda;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checklist-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .summary {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .summary h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffeaa7;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .monthly-summary {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .monthly-summary h3 {
+            color: #004085;
+            margin-bottom: 10px;
+        }
+
+        .month-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Login Screen Styles */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .storage-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .checklist-item label {
+                font-size: 14px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .login-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>📿 Tracker Ibadah</h1>
+                <p>Silakan login dengan akun siswa Anda</p>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Nama Siswa</label>
+                    <input type="text" id="username" placeholder="Masukkan nama siswa" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentId">NIS / No. Induk Siswa</label>
+                    <input type="text" id="studentId" placeholder="Masukkan NIS" required>
+                </div>
+                <button type="submit" class="btn btn-primary">🔐 Login</button>
+                <div class="storage-info">
+                    💾 Data akan tersimpan secara permanen di perangkat Anda
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="appScreen" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>📿 Tracker Ibadah Harian</h1>
+                <div class="user-info">
+                    <div>
+                        <div class="user-name" id="displayName"></div>
+                        <div style="font-size: 12px; opacity: 0.9;" id="displayId"></div>
+                    </div>
+                    <button class="logout-btn" onclick="handleLogout()">Keluar</button>
+                </div>
+                <div class="date-navigation">
+                    <button class="date-nav-btn" id="prevBtn" onclick="changeDate(-1)">◀</button>
+                    <div style="text-align: center;">
+                        <div class="date-display" id="dateDisplay"></div>
+                        <div class="today-indicator" id="todayIndicator" style="display: none;">Hari Ini</div>
+                    </div>
+                    <button class="date-nav-btn" id="nextBtn" onclick="changeDate(1)">▶</button>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar">0%</div>
+                </div>
+
+                <div class="checklist-section">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="subuh" onchange="updateProgress()">
+                        <label for="subuh"><span class="icon">🌅</span>Sholat Subuh</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="dhuha" onchange="updateProgress()">
+                        <label for="dhuha"><span class="icon">🌄</span>Sholat Dhuha</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="dzuhur" onchange="updateProgress()">
+                        <label for="dzuhur"><span class="icon">☀️</span>Sholat Dzuhur</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ashar" onchange="updateProgress()">
+                        <label for="ashar"><span class="icon">🌤️</span>Sholat Ashar</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="maghrib" onchange="updateProgress()">
+                        <label for="maghrib"><span class="icon">🌆</span>Sholat Maghrib</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="isya" onchange="updateProgress()">
+                        <label for="isya"><span class="icon">🌙</span>Sholat Isya</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="quran" onchange="updateProgress()">
+                        <label for="quran"><span class="icon">📖</span>Membaca Al-Quran</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="hafalan" onchange="updateProgress()">
+                        <label for="hafalan"><span class="icon">🎓</span>Hafalan Surat Pendek</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="infak" onchange="updateProgress()">
+                        <label for="infak"><span class="icon">💰</span>Berinfak</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doa" onchange="updateProgress()">
+                        <label for="doa"><span class="icon">🤲</span>Berdo'a</label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveDaily()">💾 Simpan Hari Ini</button>
+                <button class="btn btn-secondary" onclick="showMonthlySummary()">📊 Lihat Ringkasan Bulan Ini</button>
+
+                <div class="summary" id="dailySummary" style="display: none;">
+                    <h3>📋 Ringkasan Hari Ini</h3>
+                    <div id="summaryContent"></div>
+                </div>
+
+                <div class="monthly-summary" id="monthlySummary" style="display: none;">
+                    <h3>📅 Ringkasan Bulanan</h3>
+                    <div id="monthlyContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const activities = ['subuh', 'dhuha', 'dzuhur', 'ashar', 'maghrib', 'isya', 'quran', 'hafalan', 'infak', 'doa'];
+        const activityNames = {
+            'subuh': 'Sholat Subuh',
+            'dhuha': 'Sholat Dhuha',
+            'dzuhur': 'Sholat Dzuhur',
+            'ashar': 'Sholat Ashar',
+            'maghrib': 'Sholat Maghrib',
+            'isya': 'Sholat Isya',
+            'quran': 'Membaca Al-Quran',
+            'hafalan': 'Hafalan Surat Pendek',
+            'infak': 'Berinfak',
+            'doa': "Berdo'a"
+        };
+
+        let currentUser = null;
+        let currentDate = new Date();
+
+        // LocalStorage Keys
+        const STORAGE_KEY_USER = 'ibadahTracker_currentUser';
+        const STORAGE_KEY_DATA = 'ibadahTracker_allData';
+
+        // Initialize app
+        function initApp() {
+            checkLoginStatus();
+        }
+
+        // LocalStorage functions
+        function saveToLocalStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                alert('Gagal menyimpan data. Pastikan browser Anda mengizinkan penyimpanan data.');
+                return false;
+            }
+        }
+
+        function loadFromLocalStorage(key) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return null;
+            }
+        }
+
+        function removeFromLocalStorage(key) {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.error('Error removing from localStorage:', e);
+            }
+        }
+
+        // Get all users data
+        function getAllUsersData() {
+            return loadFromLocalStorage(STORAGE_KEY_DATA) || {};
+        }
+
+        // Save all users data
+        function saveAllUsersData(data) {
+            saveToLocalStorage(STORAGE_KEY_DATA, data);
+        }
+
+        // Check if user is logged in
+        function checkLoginStatus() {
+            const savedUser = loadFromLocalStorage(STORAGE_KEY_USER);
+            if (savedUser && savedUser.username && savedUser.studentId) {
+                currentUser = savedUser;
+                showMainApp();
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+
+            if (!username || !studentId) {
+                alert('Mohon lengkapi semua data!');
+                return;
+            }
+
+            currentUser = {
+                username: username,
+                studentId: studentId
+            };
+
+            // Save login status to localStorage
+            saveToLocalStorage(STORAGE_KEY_USER, currentUser);
+
+            // Initialize user data if not exists
+            const allData = getAllUsersData();
+            if (!allData[studentId]) {
+                allData[studentId] = {
+                    username: username,
+                    dailyData: {}
+                };
+                saveAllUsersData(allData);
+            }
+
+            showMainApp();
+        }
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Yakin ingin keluar? Data Anda tetap tersimpan dan aman.')) {
+                currentUser = null;
+                removeFromLocalStorage(STORAGE_KEY_USER);
+                currentDate = new Date();
+                showLoginScreen();
+            }
+        }
+
+        // Show login screen
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('studentId').value = '';
+        }
+
+        // Show main app
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            document.getElementById('displayName').textContent = currentUser.username;
+            document.getElementById('displayId').textContent = 'NIS: ' + currentUser.studentId;
+            updateDate();
+            loadData();
+        }
+
+        function updateDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateDisplay').textContent = currentDate.toLocaleDateString('id-ID', options);
+            
+            const today = new Date();
+            const isToday = currentDate.toDateString() === today.toDateString();
+            const todayIndicator = document.getElementById('todayIndicator');
+            todayIndicator.style.display = isToday ? 'inline-block' : 'none';
+            
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = currentDate >= today;
+        }
+
+        function changeDate(days) {
+            currentDate.setDate(currentDate.getDate() + days);
+            updateDate();
+            loadData();
+        }
+
+        function updateProgress() {
+            let checked = 0;
+            activities.forEach(activity => {
+                const checkbox = document.getElementById(activity);
+                const item = checkbox.parentElement;
+                if (checkbox.checked) {
+                    checked++;
+                    item.classList.add('checked');
+                } else {
+                    item.classList.remove('checked');
+                }
+            });
+
+            const percentage = Math.round((checked / activities.length) * 100);
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        function getDateKey(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function getCurrentDateKey() {
+            return getDateKey(currentDate);
+        }
+
+        function getMonthKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function getUserData() {
+            const allData = getAllUsersData();
+            if (!allData[currentUser.studentId]) {
+                allData[currentUser.studentId] = {
+                    username: currentUser.username,
+                    dailyData: {}
+                };
+                saveAllUsersData(allData);
+            }
+            return allData[currentUser.studentId].dailyData;
+        }
+
+        function loadData() {
+            const userData = getUserData();
+            const dateKey = getCurrentDateKey();
+            
+            activities.forEach(activity => {
+                document.getElementById(activity).checked = false;
+            });
+
+            if (userData[dateKey]) {
+                activities.forEach(activity => {
+                    if (userData[dateKey][activity]) {
+                        document.getElementById(activity).checked = true;
+                    }
+                });
+            }
+            
+            updateProgress();
+            document.getElementById('dailySummary').style.display = 'none';
+            document.getElementById('monthlySummary').style.display = 'none';
+        }
+
+        function saveDaily() {
+            const allData = getAllUsersData();
+            const userData = allData[currentUser.studentId].dailyData;
+            const dateKey = getCurrentDateKey();
+            
+            userData[dateKey] = {};
+            activities.forEach(activity => {
+                userData[dateKey][activity] = document.getElementById(activity).checked;
+            });
+
+            saveAllUsersData(allData);
+
+            let completed = 0;
+            activities.forEach(activity => {
+                if (userData[dateKey][activity]) completed++;
+            });
+
+            document.getElementById('dailySummary').style.display = 'block';
+            document.getElementById('summaryContent').innerHTML = `
+                <div class="summary-item">
+                    <span>Kegiatan Selesai</span>
+                    <strong>${completed} dari ${activities.length}</strong>
+                </div>
+                <div class="summary-item">
+                    <span>Persentase</span>
+                    <strong>${Math.round((completed / activities.length) * 100)}%</strong>
+                </div>
+                <p style="margin-top: 10px; color: #856404; text-align: center;">✅ Data berhasil disimpan secara permanen!</p>
+            `;
+
+            setTimeout(() => {
+                document.getElementById('dailySummary').style.display = 'none';
+            }, 3000);
+        }
+
+        function showMonthlySummary() {
+            const userData = getUserData();
+            const monthKey = getMonthKey();
+            const monthData = {};
+            let totalDays = 0;
+
+            Object.keys(userData).forEach(dateKey => {
+                if (dateKey.startsWith(monthKey)) {
+                    totalDays++;
+                    activities.forEach(activity => {
+                        if (!monthData[activity]) monthData[activity] = 0;
+                        if (userData[dateKey][activity]) {
+                            monthData[activity]++;
+                        }
+                    });
+                }
+            });
+
+            let html = '';
+            if (totalDays === 0) {
+                html = '<p style="text-align: center; color: #004085;">Belum ada data untuk bulan ini.</p>';
+            } else {
+                html += `<div class="month-item"><strong>Total Hari Tercatat: ${totalDays} hari</strong></div>`;
+                
+                activities.forEach(activity => {
+                    const count = monthData[activity] || 0;
+                    const percentage = totalDays > 0 ? Math.round((count / totalDays) * 100) : 0;
+                    html += `
+                        <div class="month-item">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>${activityNames[activity]}</span>
+                                <strong>${count}/${totalDays} hari (${percentage}%)</strong>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${percentage}%; height: 100%; background: #667eea;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('monthlyContent').innerHTML = html;
+            document.getElementById('monthlySummary').style.display = 'block';
+        }
+
+        // Initialize when page loads
+        initApp();
+    </script>
+</body>
+</html>
